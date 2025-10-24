@@ -29,14 +29,14 @@ def load_results(load_folders):
                 
         df = pd.DataFrame(pd.DataFrame(arrays).T)
         df.columns = col_names
-        df_rmse = df_rmse.append(df)
+        df_rmse = pd.concat([df_rmse, df], ignore_index=True)
 
         for filename in float_tensor_files:
             tensors.append(torch.load(os.path.join(folder, filename)))
         
         df = pd.DataFrame(pd.DataFrame(tensors).T)
         df.columns = col_names
-        df_task = df_task.append(df)
+        df_task = pd.concat([df_task, df], ignore_index=True)
 
     return df_rmse, df_task
 

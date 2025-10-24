@@ -70,7 +70,8 @@ def main():
                 'm', 'mle-linear', 'mle-nonlinear', 'policy-linear', 'policy-nonlinear', 'task-linear', 'task-nonlinear'))
 
         for run in range(args.nRuns):
-            for m in [100, 200, 300, 500, 1000, 3000, 5000, 10000]:
+            for m in [500, 5000]:
+            # for m in [100, 200, 300, 500, 1000, 3000, 5000, 10000]:
 
                 with open(results_file, 'a') as f:
                     f.write('\n{},'.format(m))

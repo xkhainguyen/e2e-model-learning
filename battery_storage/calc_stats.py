@@ -21,7 +21,7 @@ def load_results(load_folders):
                 
         df = pd.DataFrame(pd.DataFrame(rmse_results).T)
         df.columns = col_names
-        df_rmse = df_rmse.append(df)
+        df_rmse = pd.concat([df_rmse, df], ignore_index=True)
 
         for filename in task_loss_files:
             with open(os.path.join(folder, filename), 'rb') as f:
@@ -29,7 +29,7 @@ def load_results(load_folders):
         
         df = pd.DataFrame(pd.DataFrame(task_results).T)
         df.columns = col_names
-        df_task = df_task.append(df)
+        df_task = pd.concat([df_task, df], ignore_index=True)
 
     return df_rmse, df_task
 
