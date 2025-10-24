@@ -77,4 +77,4 @@ def plot_results(save_folder, true_model):
         loc='center left', bbox_to_anchor=(-0.2, -0.4), 
         shadow=False, ncol=5, fontsize=6.5, borderpad=0, frameon=False)
 
-    fig.savefig("{}.pdf".format(filename[:-4]), dpi=100, encoding='pdf')
+    fig.savefig("{}.pdf".format(filename[:-4]), dpi=100)

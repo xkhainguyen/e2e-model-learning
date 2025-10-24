@@ -14,29 +14,38 @@ import seaborn as sns
 import torch
 
 def load_results(load_folders):
-    array_files = ['task_net_test_rmse', 'rmse_net_test_rmse', 'weighted_rmse_net_test_rmse']
-    float_tensor_files = ['task_net_test_task', 'rmse_net_test_task', 'weighted_rmse_net_test_task']
+    array_files = [
+        'task_net_test_rmse',
+        'rmse_net_test_rmse',
+        'weighted_rmse_net_test_rmse'
+    ]
+    tensor_files = [
+        'task_net_test_task',
+        'rmse_net_test_task',
+        'weighted_rmse_net_test_task'
+    ]
     col_names = ['Task-based', 'RMSE', 'Cost-weighted RMSE']
 
-    df_rmse = pd.DataFrame()
-    df_task = pd.DataFrame()
-    for folder in load_folders:
-        arrays, tensors = [], []
-            
-        for filename in array_files:
-            with open(os.path.join(folder, filename), 'rb') as f:
-                arrays.append(np.load(f))
-                
-        df = pd.DataFrame(pd.DataFrame(arrays).T)
-        df.columns = col_names
-        df_rmse = pd.concat([df_rmse, df], ignore_index=True)
+    rmse_frames = []
+    task_frames = []
 
-        for filename in float_tensor_files:
-            tensors.append(torch.load(os.path.join(folder, filename)))
-        
-        df = pd.DataFrame(pd.DataFrame(tensors).T)
-        df.columns = col_names
-        df_task = pd.concat([df_task, df], ignore_index=True)
+    for folder in load_folders:
+        # === RMSE arrays ===
+        arrays = [np.load(os.path.join(folder, f)) for f in array_files]
+        df_rmse = pd.DataFrame(np.array(arrays).T, columns=col_names)
+        rmse_frames.append(df_rmse)
+
+        # === Task tensors ===
+        tensors = [
+            torch.as_tensor(torch.load(os.path.join(folder, f), weights_only=False))
+            for f in tensor_files
+        ]
+        df_task = pd.DataFrame(torch.stack(tensors).T.numpy(), columns=col_names)
+        task_frames.append(df_task)
+
+    # Concatenate all runs
+    df_rmse = pd.concat(rmse_frames, ignore_index=True)
+    df_task = pd.concat(task_frames, ignore_index=True)
 
     return df_rmse, df_task
 
@@ -90,4 +99,4 @@ def plot_results(load_folders, save_folder):
         shadow=False, ncol=7, fontsize=12, borderpad=0, frameon=False)
 
     fig.savefig(os.path.join(save_folder, 
-        '{}.pdf'.format(save_folder)), dpi=100, encoding='pdf')
+        '{}.pdf'.format(save_folder)), dpi=100)
